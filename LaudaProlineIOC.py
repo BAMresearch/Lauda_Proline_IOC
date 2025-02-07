@@ -102,9 +102,9 @@ class LaudaIOC(PVGroup):
     @Run.putter
     async def Run(self, instance, value: bool):
         if bool(value):
-            self.client.write("START")
+            self.client.write("START", None)
         else:
-            self.client.write("STOP")
+            self.client.write("STOP", None)
     @Run.scan(period=15, use_scan_field=True)
     async def Run(self, instance: ChannelData, async_lib: AsyncLibraryLayer):
         async with self._communication_lock:
@@ -130,9 +130,9 @@ class LaudaIOC(PVGroup):
     @RMP_Run.putter
     async def RMP_Run(self, instance, value: bool):
         if bool(value):
-            self.client.write("RMP_START")
+            self.client.write("RMP_START", None)
         else:
-            self.client.write("RMP_STOP")
+            self.client.write("RMP_STOP", None)
     @RMP_Run.scan(period=15, use_scan_field=True)
     async def RMP_Run(self, instance: ChannelData, async_lib: AsyncLibraryLayer):
         async with self._communication_lock:
