@@ -18,15 +18,15 @@ This project implements an EPICS IOC for interfacing with the Lauda Proline RP85
 
 | PV Name         | Description                                                  | Scannable?                     |
 |-----------------|--------------------------------------------------------------|--------------------------------|
-| **TSET**        | Temperature setpoint (write-only)                            | No (uses putter only)          |
-| **TSET_RBV**    | Setpoint readback (updates via scan, based on command \`IN_SP_00\`) | Yes                            |
+| **TSET**        | Temperature setpoint (write-only)                            | Yes (output in TSET_RBV)          |
+| **TSET_RBV**    | Setpoint readback (updates via scan, based on command \`IN_SP_00\`) | No                            |
 | **T_RBV**       | Bath temperature readback (updates via scan, based on command \`IN_PV_00\`) | Yes                            |
-| **Run**         | Chiller operating mode control (write-only)                  | No (uses putter only)          |
-| **Run_RBV**     | Operating mode readback (updates via scan, based on command \`IN_MODE_02\`) | Yes                            |
-| **RMP**         | Run program selection (values 1-5, write-only)               | No (uses putter only)          |
-| **RMP_RBV**     | Readback of selected run program (updates via scan, based on command \`RMP_IN_05\`) | Yes                            |
-| **RMP_Run**     | Start/Stop selected program control (write-only)             | No (uses putter only)          |
-| **RMP_Run_RBV** | Program run state readback (updates via scan, based on command \`RMP_IN_05\`) | Yes                            |
+| **Run**         | Chiller operating mode control (write-only)                  | Yes (output in Run_RBV)          |
+| **Run_RBV**     | Operating mode readback (updates via scan, based on command \`IN_MODE_02\`) | No                            |
+| **RMP**         | Run program selection (values 1-5, write-only)               | Yes (output in RMP_RBV)          |
+| **RMP_RBV**     | Readback of selected run program (updates via scan, based on command \`RMP_IN_05\`) | No                            |
+| **RMP_Run**     | Start/Stop selected program control (write-only)             | Yes (output in RMP_Run_RBV)          |
+| **RMP_Run_RBV** | Program run state readback (updates via scan, based on command \`RMP_IN_05\`) | No                            |
 
 *Note:* The scan methods for readback PVs update every 15 seconds by default. Adjust the period if needed.
 
