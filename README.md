@@ -49,8 +49,8 @@ This project implements an EPICS IOC for interfacing with the Lauda Proline RP85
 2. **(Optional) Create and Activate a Virtual Environment:**
 
    \`\`\`bash
-   python3 -m venv venv
-   source venv/bin/activate
+   python3 -m venv .venv &&
+   source .venv/bin/activate
    \`\`\`
 
 3. **Install Required Packages:**
