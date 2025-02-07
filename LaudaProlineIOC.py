@@ -105,8 +105,8 @@ class LaudaIOC(PVGroup):
         print('Run', value)
         if isinstance(value, str):
             if value.lower() in {'on', 'true'}:
-                value = 1 
-            if value.lower() in {'off', 'false'}:
+                value = 1
+            elif value.lower() in {'off', 'false'}:
                 value = 0 
         if bool(value):
             self.client.write("START", None)
@@ -140,7 +140,7 @@ class LaudaIOC(PVGroup):
         if isinstance(value, str):
             if value.lower() in {'on', 'true'}:
                 value = 1 
-            if value.lower() in {'off', 'false'}:
+            elif value.lower() in {'off', 'false'}:
                 value = 0 
         if bool(value):
             self.client.write("RMP_START", None)
