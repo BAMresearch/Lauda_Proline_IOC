@@ -51,7 +51,8 @@ class LaudaClient:
     def write(self, group_command: str, value: int | float | str | None):
         # group_command like "OUT_SP_00", value like "23.56"
         # if isinstance(value, str):
-        #     value = 1 if value.lower() in {'on', 'true'} else 0
+        #     value = 1 if value.lower() in {'on', 'true'}
+        #     value = 0 if value.lower() in {'off', 'false'}
         if value is not None:
             message = f"{group_command}_{value}\r\n"
         else:
@@ -102,6 +103,9 @@ class LaudaIOC(PVGroup):
     @Run.putter
     async def Run(self, instance, value: bool):
         print('Run', value)
+        if isinstance(value, str):
+            value = 1 if value.lower() in {'on', 'true'}
+            value = 0 if value.lower() in {'off', 'false'}
         if bool(value):
             self.client.write("START", None)
         else:
@@ -131,6 +135,9 @@ class LaudaIOC(PVGroup):
     RMP_Run_RBV = pvproperty(name="RMP_Run_RBV", doc="Readback program run state", dtype=bool, record='bi')
     @RMP_Run.putter
     async def RMP_Run(self, instance, value: bool):
+        if isinstance(value, str):
+            value = 1 if value.lower() in {'on', 'true'}
+            value = 0 if value.lower() in {'off', 'false'}
         if bool(value):
             self.client.write("RMP_START", None)
         else:
