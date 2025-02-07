@@ -101,6 +101,7 @@ class LaudaIOC(PVGroup):
     Run_RBV = pvproperty(name="Run_RBV", doc="Readback for operating mode", dtype=bool, record='bi')
     @Run.putter
     async def Run(self, instance, value: bool):
+        print('Run', value)
         if bool(value):
             self.client.write("START", None)
         else:
@@ -108,7 +109,8 @@ class LaudaIOC(PVGroup):
     @Run.scan(period=15, use_scan_field=True)
     async def Run(self, instance: ChannelData, async_lib: AsyncLibraryLayer):
         async with self._communication_lock:
-            await self.Run_RBV.write(bool(float(self.client.read("IN_MODE_02"))))
+            # value is inverted: 1 = device is off. Does not seem to be linked to start/stop
+            await self.Run_RBV.write(not(bool(float(self.client.read("IN_MODE_02")))))
 
     # Program selection
     RMP = pvproperty(name="RMP", doc="Set run program (1-5)", dtype=float, record='ai')
