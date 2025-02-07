@@ -7,8 +7,6 @@ from datetime import datetime, timezone
 from caproto.server import PVGroup, pvproperty, PvpropertyString, run, template_arg_parser, AsyncLibraryLayer
 from caproto import ChannelData
 
-import logging
-
 logger = logging.getLogger("LaudaProlineIOC")
 logger.setLevel(logging.INFO)
 
@@ -36,8 +34,11 @@ class LaudaClient:
         sock.connect((self.host, self.port))
         return sock
 
+    async def async_read(self, group_command: str) -> float:
+        return await asyncio.to_thread(self.read, group_command)
+
     def read(self, group_command: str) -> float:
-        message = f"{group_command}\n"
+        message = f"{group_command}\r\n"
         with self._connect() as sock:
             sock.sendall(message.encode('utf-8'))
             response = sock.recv(1024).decode('utf-8')
@@ -51,13 +52,17 @@ class LaudaClient:
         # group_command like "OUT_SP_00", value like "23.56"
         # if isinstance(value, str):
         #     value = 1 if value.lower() in {'on', 'true'} else 0
-        message = f"{group_command}_{value}\n"
+        if value is not None:
+            message = f"{group_command}_{value}\r\n"
+        else:
+            message = f"{group_command}\r\n"
         with self._connect() as sock:
             sock.sendall(message.encode('utf-8'))
             response = sock.recv(1024).decode('utf-8')
         logging.info(f"Sent message: {message}, response: {response}")
-        if response != "OK":
+        if not response.startswith("OK"):
             raise ValueError(f"Unexpected response: {response}")
+
 
 @attrs.define
 class LaudaIOC(PVGroup):
@@ -74,19 +79,20 @@ class LaudaIOC(PVGroup):
         super().__init__(*args, **kwargs)
         self._communication_lock = asyncio.Lock()
 
+
     TSET = pvproperty(name="TSET", doc="Temperature setpoint", dtype=float, record='ai')
     TSET_RBV = pvproperty(name="TSET_RBV", doc="Setpoint RBV", dtype=float, record='ai')
     @TSET.putter
     async def TSET(self, instance, value: float):
         self.client.write("OUT_SP_00", value)
     @TSET.scan(period=15, use_scan_field=True)
-    async def TSET_RBV(self, instance: ChannelData, async_lib: AsyncLibraryLayer):
+    async def TSET(self, instance: ChannelData, async_lib: AsyncLibraryLayer):
         async with self._communication_lock:
             await self.TSET_RBV.write(self.client.read("IN_SP_00"))
 
     T_RBV = pvproperty(name="T_RBV", doc="Bath temperature", dtype=float, record='ai')
     @T_RBV.scan(period=15, use_scan_field=True)
-    async def TSET_RBV(self, instance: ChannelData, async_lib: AsyncLibraryLayer):
+    async def T_RBV(self, instance: ChannelData, async_lib: AsyncLibraryLayer):
         async with self._communication_lock:
             await self.T_RBV.write(self.client.read("IN_PV_00"))
 
@@ -131,7 +137,7 @@ class LaudaIOC(PVGroup):
     async def RMP_Run(self, instance: ChannelData, async_lib: AsyncLibraryLayer):
         async with self._communication_lock:
             pnum = self.client.read("RMP_IN_05")
-            if int(float(pnum)) != "0":
+            if int(float(pnum)) != 0:
                 await self.RMP_Run_RBV.write(True)
             else:
                 await self.RMP_Run_RBV.write(False)
