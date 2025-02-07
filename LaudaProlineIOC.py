@@ -88,13 +88,13 @@ class LaudaIOC(PVGroup):
     @TSET.scan(period=15, use_scan_field=True)
     async def TSET(self, instance: ChannelData, async_lib: AsyncLibraryLayer):
         async with self._communication_lock:
-            await self.TSET_RBV.write(self.client.read("IN_SP_00"))
+            await self.TSET_RBV.write(self.client.async_read("IN_SP_00"))
 
     T_RBV = pvproperty(name="T_RBV", doc="Bath temperature", dtype=float, record='ai')
     @T_RBV.scan(period=15, use_scan_field=True)
     async def T_RBV(self, instance: ChannelData, async_lib: AsyncLibraryLayer):
         async with self._communication_lock:
-            await self.T_RBV.write(self.client.read("IN_PV_00"))
+            await self.T_RBV.write(self.client.async_read("IN_PV_00"))
 
     # Start/Stop
     Run = pvproperty(name="Run", doc="Set the chiller to operating mode", dtype=bool, record='bi')
@@ -108,7 +108,7 @@ class LaudaIOC(PVGroup):
     @Run.scan(period=15, use_scan_field=True)
     async def Run(self, instance: ChannelData, async_lib: AsyncLibraryLayer):
         async with self._communication_lock:
-            await self.Run_RBV.write(bool(float(self.client.read("IN_MODE_02"))))
+            await self.Run_RBV.write(bool(float(self.client.async_read("IN_MODE_02"))))
 
     # Program selection
     RMP = pvproperty(name="RMP", doc="Set run program (1-5)", dtype=float, record='ai')
@@ -122,7 +122,7 @@ class LaudaIOC(PVGroup):
     @RMP.scan(period=15, use_scan_field=True)
     async def RMP(self, instance: ChannelData, async_lib: AsyncLibraryLayer):
         async with self._communication_lock:
-            await self.RMP_RBV.write(self.client.read("RMP_IN_05"))
+            await self.RMP_RBV.write(self.client.async_read("RMP_IN_05"))
     
     # Program start/stop
     RMP_Run = pvproperty(name="RMP_Run", doc="Start/stop selected program", dtype=bool, record='bi')
