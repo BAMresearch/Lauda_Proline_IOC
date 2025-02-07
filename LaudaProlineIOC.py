@@ -42,7 +42,7 @@ class LaudaClient:
         with self._connect() as sock:
             sock.sendall(message.encode('utf-8'))
             response = sock.recv(1024).decode('utf-8')
-        logging.warning(f"Sent message: {message}, response: {response}")
+        logging.debug(f"Sent message: {message}, response: {response}")
         if response.startswith("ERR_"):
             logging.error(f"Error reading {group_command}: {response}")
             raise ValueError(f"{response}")
@@ -60,7 +60,7 @@ class LaudaClient:
         with self._connect() as sock:
             sock.sendall(message.encode('utf-8'))
             response = sock.recv(1024).decode('utf-8')
-        logging.warning(f"Sent message: {message}, response: {response}")
+        logging.debug(f"Sent message: {message}, response: {response}")
         if not response.startswith("OK"):
             raise ValueError(f"Unexpected response: {response}")
 
