@@ -104,8 +104,10 @@ class LaudaIOC(PVGroup):
     async def Run(self, instance, value: bool):
         print('Run', value)
         if isinstance(value, str):
-            value = 1 if value.lower() in {'on', 'true'}
-            value = 0 if value.lower() in {'off', 'false'}
+            if value.lower() in {'on', 'true'}:
+                value = 1 
+            if value.lower() in {'off', 'false'}:
+                value = 0 
         if bool(value):
             self.client.write("START", None)
         else:
@@ -136,8 +138,10 @@ class LaudaIOC(PVGroup):
     @RMP_Run.putter
     async def RMP_Run(self, instance, value: bool):
         if isinstance(value, str):
-            value = 1 if value.lower() in {'on', 'true'}
-            value = 0 if value.lower() in {'off', 'false'}
+            if value.lower() in {'on', 'true'}:
+                value = 1 
+            if value.lower() in {'off', 'false'}:
+                value = 0 
         if bool(value):
             self.client.write("RMP_START", None)
         else:
